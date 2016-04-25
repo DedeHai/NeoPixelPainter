@@ -1,5 +1,7 @@
 # NeoPixel Painter Library
+https://github.com/DedeHai/NeoPixelPainter
 A library to ease the creation of simple LED-strip animations. See examples for some inspiration.
+
 
 #How to use
 The basic principle is to use a brush that can be moved to any pixel. The brush holds a color using the HSV color space
