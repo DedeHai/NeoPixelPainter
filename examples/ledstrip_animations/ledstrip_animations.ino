@@ -58,11 +58,11 @@ void loop() {
 
 	//main program loops through different animations, allocating addidional canvas and brushes if needed
 
-  //---------------------
+	//---------------------
 	//RAINBOW PAINT (aka nyan cat)
 	//---------------------
 
-  //the brush moves along the strip, leaving a colorful rainbow trail
+	//the brush moves along the strip, leaving a colorful rainbow trail
 	for(loopcounter = 0; loopcounter<duration; loopcounter++) 
 	{
 		static unsigned int hue = 0; //color hue to set to brush
@@ -76,7 +76,7 @@ void loop() {
 			pixelbrush.setFadeSpeed(90);
 			pixelbrush.setFadein(false); //brightness will fade-in if set to true
 			pixelbrush.setFadeout(true);
-      pixelbrush.setBounce(false);
+			pixelbrush.setBounce(false);
 		}
 
 		hue++;
@@ -136,9 +136,9 @@ void loop() {
 
 
 	//---------------------
-  //TWINKLY STARS
-  //---------------------
-  //brush set to random positions and painting a fading star
+	//TWINKLY STARS
+	//---------------------
+	//brush set to random positions and painting a fading star
 	for(loopcounter = 0; loopcounter<duration; loopcounter++) 
 	{
 
@@ -181,13 +181,13 @@ void loop() {
 	initialized = false; //reset the variable before moving to the next loop
 
 
-  //-------------
+	//-------------
 	//CHASER
-  //-------------
+	//-------------
 
-  // two brushes chasing each other, one painting the pixel in a color, the other one painting 'black' (acting on the same canvas)
+	// two brushes chasing each other, one painting the pixel in a color, the other one painting 'black' (acting on the same canvas)
 	
-  while(true) //create a loop with an additional brush (is deleted automatically once the loop finishes)
+	while(true) //create a loop with an additional brush (is deleted automatically once the loop finishes)
 	{
 
 		//create an additional brush, painting on the same canvas as the globally defined brush
@@ -214,9 +214,9 @@ void loop() {
 				//initialize the first brush to move and paint a color, no fading 
 				pixelbrush.setSpeed(900); //moving speed
 				pixelbrush.setColor(brushcolor);
-        pixelbrush.setFadeout(false); //deactivate fade-out (was activated in last animation)
-        pixelbrush.setFadein(false); //deactivate fade-in 
-        pixelbrush2.moveTo(0); //move the brush to pixel 0
+				pixelbrush.setFadeout(false); //deactivate fade-out (was activated in last animation)
+				pixelbrush.setFadein(false); //deactivate fade-in 
+				pixelbrush2.moveTo(0); //move the brush to pixel 0
 				//initialize the second brush to move at the same speed but starting at a different position (default position is 0)
 				brushcolor.v = 0; //zero intensity = black
 				pixelbrush2.setSpeed(900);
@@ -241,9 +241,9 @@ void loop() {
 
 
 
-  //------------------------------
+	//------------------------------
 	//HUE FADER: demo of hue fading
-  //------------------------------
+	//------------------------------
 
 	//hue fading can be done in two ways: change the color moving the shortest distance around the colorwheel (setFadeHueNear)
 	//or intentionally moving around the colorwheel choosing the long way (setFadeHueFar)
@@ -260,7 +260,7 @@ void loop() {
 		if (pixelbrush2.isvalid() == false) Serial.println(F("brush2 allocation problem"));
 		else  Serial.println(F("brush2 allocation ok"));
 
-     pixelcanvas.clear(); //clear the canvas
+		pixelcanvas.clear(); //clear the canvas
 
 		for(loopcounter = 0; loopcounter<duration; loopcounter++) 
 		{
@@ -276,7 +276,7 @@ void loop() {
 				initialized = true;
 
 				HSV brushcolor;
-   
+
 
 				brushcolor.h = random(255); //random color
 				brushcolor.s = 255; //full saturation
@@ -311,12 +311,12 @@ void loop() {
 
 	initialized = false;
 
-  //------------------------------
+	//------------------------------
 	//SPEEDTRAILS
-  //------------------------------
-  //three brushes painting on one canvas, all following each other at the same speed, painting fading pixels
+	//------------------------------
+	//three brushes painting on one canvas, all following each other at the same speed, painting fading pixels
 	
-  while(true) //create a loop with two additional brushes (are deleted automatically once the loop finishes)
+	while(true) //create a loop with two additional brushes (are deleted automatically once the loop finishes)
 	{
 		int brushspeed = 900;
 
@@ -346,8 +346,8 @@ void loop() {
 				pixelbrush.setSpeed(brushspeed);
 				pixelbrush.setFadeSpeed(250); //fast fading (255 is max.)
 				pixelbrush.setFadeHueNear(false); //deactivate hue fading, was activated in last animation
-        pixelbrush.setFadeout(true);
-        pixelbrush.moveTo(0); //move brush to zero
+				pixelbrush.setFadeout(true);
+				pixelbrush.moveTo(0); //move brush to zero
 				
 				//second brush
 				brushcolor.h = 0; //red
@@ -359,7 +359,7 @@ void loop() {
 				pixelbrush2.setColor(brushcolor);
 				pixelbrush2.moveTo(NUMBEROFPIXELS / 3); //move it up one third of the strip
 				
-        //third brush
+				//third brush
 				brushcolor.h = 28; //yellow
 				brushcolor.s = 255;
 				brushcolor.v = 100;
@@ -387,9 +387,9 @@ void loop() {
 
 
 
-  //-------------
+	//-------------
 	//BOUNCY BALLS
-  //-------------
+	//-------------
 	//three brushes painting on one canvas, attracted to the zero pixel as if by gravity
 
 	while(true) //create a loop with two additional brushes (are deleted automatically once the loop finishes)
@@ -473,9 +473,9 @@ void loop() {
 
 	initialized = false;
 
-  //---------------------
+	//---------------------
 	//TWO-BRUSH-COLORMIXING
-  //---------------------
+	//---------------------
 
 	//two brushes moving around randomly paint on their individual canvas, resulting in colors being mixed 
 	while(true) //create a loop with two additional brushes (are deleted automatically once the loop finishes)
