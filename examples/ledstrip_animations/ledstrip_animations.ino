@@ -9,8 +9,9 @@ Also, on platforms with more available RAM (like the ESP8266), more
 canvases can be used to paint even more mixing colors.
 
 If you come up with other good animations you want to share, please
-post the code on the GitHub repository by opening a new issue. 
-I will then add it as a demo (with proper attribution).
+post the code on the GitHub repository by opening a new issue:
+https://github.com/DedeHai/NeoPixelPainter/issues
+I may then add it as a demo (with proper attribution).
 */
 
 const int duration = 2000; //number of loops to run each animation for
