@@ -34,7 +34,7 @@ implemented the fadings using 16bit variables and bit-shifts (aka fixed point ar
 - **NeoPixelPainterBrush(NeoPixelPainterCanvas* hsv_canvas)** 
   - class constructor, taking a pointer to a canvas (use &canvasname to pass the pointer)
 - **~NeoPixelPainterBrush(void)** 
-  -class deconstructor, is called automatically when the created class leaves the local scope (i.e. a loop)
+  - class deconstructor, is called automatically when the created class leaves the local scope (i.e. a loop)
 - **bool isvalid(void)** 
   - returns true if memory allocation for the class was successful. Use it if you are not sure if enough memory was available
 - **void paint(void)**
