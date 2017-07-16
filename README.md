@@ -3,7 +3,7 @@ https://github.com/DedeHai/NeoPixelPainter
 A library to ease the creation of simple LED-strip animations. See examples for some inspiration.
 
 
-#How to use
+# How to use
 The basic principle is to use a brush that can be moved to any pixel. The brush holds a color using the HSV color space
 rather than RGB. This allows for making colorful animations with color fading as well as brightness fading. 
 To make the brush move on its own, give it a speed and it will move a little on each function call. 
@@ -16,7 +16,7 @@ Also, all fading is implemented without the use of floats. This makes it fast an
 The downside is, that color fadings are slightly less accurate but almost indistinguishable to the naked eye because I
 implemented the fadings using 16bit variables and bit-shifts (aka fixed point arithmetic), making it almost as accurate as when using floats.
 
-##Basic procedure
+## Basic procedure
 - create a Adafruit_NeoPixel object (myneopixels)
 - create a canvas object (mycanvas), passing the just created neopixel object
 - create a brush object (mybrush), passing it the canvas object
@@ -29,8 +29,8 @@ implemented the fadings using 16bit variables and bit-shifts (aka fixed point ar
 
 
 
-#Reference
-##NeoPixelPainterBrush-Class functions
+# Reference
+## NeoPixelPainterBrush-Class functions
 - **NeoPixelPainterBrush(NeoPixelPainterCanvas* hsv_canvas)** 
   - class constructor, taking a pointer to a canvas (use &canvasname to pass the pointer)
 - **~NeoPixelPainterBrush(void)** 
@@ -72,7 +72,7 @@ implemented the fadings using 16bit variables and bit-shifts (aka fixed point ar
 - **void setBounce(bool value)**
   - bounce the brush once it reaches either end of the strip instead of jumping to the other end
 
-##NeoPixelPainterCanvas-Class functions
+## NeoPixelPainterCanvas-Class functions
 - **NeoPixelPainterCanvas(Adafruit_NeoPixel* NeoPixels)**
   - class constructor, pass the neopixels as a pointer (using '&myneopixels')
 - **~NeoPixelPainterCanvas(void)**
