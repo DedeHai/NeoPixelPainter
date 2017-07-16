@@ -8,6 +8,9 @@ other Arduino platforms, speeds may need to be adjusted to give the same effect
 Also, on platforms with more available RAM (like the ESP8266), more
 canvases can be used to paint even more mixing colors.
 
+A quick and dirty video of what this code does is here: 
+https://www.youtube.com/watch?v=PYAIwoRsGbo
+
 If you come up with other good animations you want to share, please
 post the code on the GitHub repository by opening a new issue:
 https://github.com/DedeHai/NeoPixelPainter/issues
