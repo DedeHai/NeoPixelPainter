@@ -9,6 +9,7 @@ isvalid	KEYWORD2
 paint	KEYWORD2
 moveTo	KEYWORD2
 getPosition	KEYWORD2
+getSubPosition	KEYWORD2
 setSpeed	KEYWORD2
 getSpeed	KEYWORD2
 setSpeedlimit	KEYWORD2
@@ -22,6 +23,8 @@ setFadeHueFar	KEYWORD2
 setFadeSaturation_in	KEYWORD2
 setFadeSaturation_out	KEYWORD2
 setBounce	KEYWORD2
+setStop	KEYWORD2
+setExtAddColorRGB	KEYWORD2
 
 RGB	KEYWORD2
 HSV	KEYWORD2
