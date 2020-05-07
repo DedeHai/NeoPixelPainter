@@ -71,26 +71,29 @@ typedef struct {
 	uint8_t fadesaturation_in : 1; //fade from zero to fadevalue
 	uint8_t fadesaturation_out : 1; //fade from initialvalue to 0
 	uint8_t bounce : 1; //speed is reversed when hitting the end of the strip (as opposed to continue at the other side)
+	uint8_t stop: 1; //stop at the end
 } brush;
 
 
 class NeoPixelPainterCanvas
 {
+	void (*addColorRGBext)(int index, RGB RGBcolor);
 public:
+	NeoPixelPainterCanvas(Adafruit_NeoPixel* NeoPixels, uint16_t count); //user defined length, can be shorter than real strip
 	NeoPixelPainterCanvas(Adafruit_NeoPixel* NeoPixels);
 	~NeoPixelPainterCanvas(void);
 	bool isvalid(void);
 	void clear(void);
 	void transfer(void);
+	void setExtAddColorRGB(void (*func)(int, RGB));
 	hsvcanvas* _canvas;
 	Adafruit_NeoPixel* _LED; //pointer to neopixels   listNode*
-
+	uint16_t _count; //LED count
+	RGB HSVtoRGB(uint8_t H, uint8_t S, uint8_t V); 
 private:
 	uint16_t _speedcounter; //counter for smooth fading without using floats
 	void addColorRGB(int index, RGB RGBcolor);  
 	void addColorHSV(int index, uint8_t H, uint8_t S, uint8_t V);
-	RGB HSVtoRGB(uint8_t H, uint8_t S, uint8_t V); 
-	RGB HSVtoRGB_int(uint8_t H, uint8_t S, uint8_t V);   
 };
 
 
@@ -103,6 +106,7 @@ public:
 	void paint(void);
 	void moveTo(uint16_t position);
 	int16_t getPosition(void);
+	int32_t getSubPosition(void);
 	void setSpeed(int16_t speed);
 	uint16_t getSpeed(void);
 	void setSpeedlimit(int16_t limit);
@@ -117,6 +121,7 @@ public:
 	void setFadeSaturation_in(bool value);
 	void setFadeSaturation_out(bool value);
 	void setBounce(bool value);
+	void setStop(bool value);
 
 private:
 	brush* _brush; 

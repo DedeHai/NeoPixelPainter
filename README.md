@@ -43,6 +43,8 @@ implemented the fadings using 16bit variables and bit-shifts (aka fixed point ar
   - move the brush to a certain pixel in the strip
 - **int16_t getPosition(void)** 
   - read current pixel position the brush is at
+- **int32_t getSubPosition(void)** 
+  - read current sub-pixel position the brush is at
 - **void setSpeed(int16_t speed)** 
   - set the speed of the brush. since sub-pixel speed is used, one pixel per iteration is (1<<12) or 4095
 - **uint16_t getSpeed(void)** 
@@ -71,12 +73,18 @@ implemented the fadings using 16bit variables and bit-shifts (aka fixed point ar
   - the canvas will fade the color saturation from the current value to the set value (or to zero if saturation fade-in is also active)
 - **void setBounce(bool value)**
   - bounce the brush once it reaches either end of the strip instead of jumping to the other end
+- **void setStop(bool value)**
+  - stop brush at the and and don't move any more
 
 ## NeoPixelPainterCanvas-Class functions
 - **NeoPixelPainterCanvas(Adafruit_NeoPixel* NeoPixels)**
   - class constructor, pass the neopixels as a pointer (using '&myneopixels')
+- **NeoPixelPainterCanvas(Adafruit_NeoPixel* NeoPixels, uint16_t count)**
+  - class constructor, pass the neopixels as a pointer (using '&myneopixels') and the count of pixels (can be shorter as a &myneopixels stripe)
 - **~NeoPixelPainterCanvas(void)**
   - class deconstructor, is called automatically when the created class leaves the local scope (i.e. a loop)
+- **setAddColorRGBext(void (*func)(int, RGB))**
+  - set pointer to user defined addColorRGB function (used for user defined canvas length, that is shorter that real stripe)
 - **bool isvalid(void)**
   - returns true if memory allocation for the class was successful. Use it if you are not sure if enough memory was available. The canvas uses a lot of memory: 6 bytes per pixel.
 - **void clear(void)**

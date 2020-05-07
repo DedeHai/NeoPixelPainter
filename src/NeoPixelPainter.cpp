@@ -18,12 +18,22 @@
 
 #include "NeoPixelPainter.h"
 
+NeoPixelPainterCanvas::NeoPixelPainterCanvas(Adafruit_NeoPixel* NeoPixels, uint16_t count)
+{
+	//allocate memory for a canvas, add it to the canvas list and return the pointer to the new canvas
+	_LED = NeoPixels;
+	_count = count;
+	_canvas = (hsvcanvas*)calloc(_count, sizeof(hsvcanvas)); //create an array of canvas pixels
+
+}
 
 NeoPixelPainterCanvas::NeoPixelPainterCanvas(Adafruit_NeoPixel* NeoPixels)
 {
 	//allocate memory for a canvas, add it to the canvas list and return the pointer to the new canvas
 	_LED = NeoPixels;
-	_canvas = (hsvcanvas*)calloc(_LED->numPixels(),sizeof(hsvcanvas)); //create an array of canvas pixels
+	_count = _LED->numPixels();
+	_canvas = (hsvcanvas*)calloc(_count, sizeof(hsvcanvas)); //create an array of canvas pixels
+
 
 }
 
@@ -40,7 +50,7 @@ bool NeoPixelPainterCanvas::isvalid(void)
 
 void  NeoPixelPainterCanvas::clear() //clear all hsv fade pixels on the canvas
 {
-	memset(_canvas, 0, _LED->numPixels()*sizeof(hsvcanvas));
+	memset(_canvas, 0, _count * sizeof(hsvcanvas));
 }
 
 //update & transfer the hsv canvas to the LEDs
@@ -48,7 +58,7 @@ void NeoPixelPainterCanvas::transfer(void){
 
 	if(isvalid()==false) return; //canvas painting array was not properly allocated
 	int i;
-	for (i = 0; i < _LED->numPixels(); i++)
+	for (i = 0; i < _count; i++)
 	{
 		addColorHSV(i,  _canvas[i].h, _canvas[i].s, _canvas[i].v);
 
@@ -164,6 +174,9 @@ void NeoPixelPainterCanvas::transfer(void){
 	_speedcounter++;
 }
 
+void NeoPixelPainterCanvas::setExtAddColorRGB(void (*func)(int, RGB)) {
+	addColorRGBext = func;
+}
 
 void NeoPixelPainterCanvas::addColorRGB(int index, RGB color)
 {
@@ -191,7 +204,11 @@ void NeoPixelPainterCanvas::addColorHSV(int index, uint8_t H, uint8_t S, uint8_t
 {
 	RGB color;
 	color = HSVtoRGB(H, S, V);
-	addColorRGB(index, color);
+	if (*addColorRGBext != NULL) {
+		addColorRGBext(index, color);
+	}else{
+		addColorRGB(index, color);
+	}
 }
 
 
@@ -200,49 +217,51 @@ void NeoPixelPainterCanvas::addColorHSV(int index, uint8_t H, uint8_t S, uint8_t
 //HSV to RGB using only integers (error as opposed to using floats is negligeable, maximum 2LSB)
 RGB NeoPixelPainterCanvas::HSVtoRGB(uint8_t H, uint8_t S, uint8_t V) {
 	RGB returncolor;
-	uint16_t p, q, t, i, f,h,s,v;
-	h=H; s= S; v = V;
+	uint16_t p, q, t, i, f, h, s, v;
+	h = H; 
+	s = S; 
+	v = V;
 	if (s == 0) {
 		returncolor.r = returncolor.g = returncolor.b = v;
 	} else {
 		h = h << 4;
 		i = h / 680;
 		f = (h % 680) >> 4;
-		p = (v * (255 - s))  >> 8;
-		q = (v * ((10710 - (s * f)) / 42))  >> 8;
+		p = (v * (255 - s)) >> 8;
+		q = (v * ((10710 - (s * f)) / 42)) >> 8;
 		t = (v * ((10710 - (s * (42 - f))) / 42)) >> 8;
 
 		switch (i) {
-		case 1:
-			returncolor.r = q;
-			returncolor.g = v;
-			returncolor.b = p;
-			break;
-		case 2:
-			returncolor.r = p;
-			returncolor.g = v;
-			returncolor.b = t;
-			break;
-		case 3:
-			returncolor.r = p;
-			returncolor.g = q;
-			returncolor.b = v;
-			break;
-		case 4:
-			returncolor.r = t;
-			returncolor.g = p;
-			returncolor.b = v;
-			break;
-		case 5:
-			returncolor.r = v;
-			returncolor.g = p;
-			returncolor.b = q;
-			break;
-		default:  //in case i > 5 or i == 0
-			returncolor.r = v;
-			returncolor.g = t;
-			returncolor.b = p;
-			break;
+			case 1:
+				returncolor.r = q;
+				returncolor.g = v;
+				returncolor.b = p;
+				break;
+			case 2:
+				returncolor.r = p;
+				returncolor.g = v;
+				returncolor.b = t;
+				break;
+			case 3:
+				returncolor.r = p;
+				returncolor.g = q;
+				returncolor.b = v;
+				break;
+			case 4:
+				returncolor.r = t;
+				returncolor.g = p;
+				returncolor.b = v;
+				break;
+			case 5:
+				returncolor.r = v;
+				returncolor.g = p;
+				returncolor.b = q;
+				break;
+			default:  //in case i > 5 or i == 0
+				returncolor.r = v;
+				returncolor.g = t;
+				returncolor.b = p;
+				break;
 		}
 	}
 
@@ -272,7 +291,7 @@ RGB NeoPixelPainterCanvas::HSVtoRGB(uint8_t H, uint8_t S, uint8_t V) {
 
 NeoPixelPainterBrush::NeoPixelPainterBrush(NeoPixelPainterCanvas* hsv_canvas)
 {
-	_brush = (brush*)calloc(1,sizeof(brush)); //create an array of canvas pixels
+	_brush = (brush*)calloc(1, sizeof(brush)); //create an array of canvas pixels
 	_canvastopaint = hsv_canvas;
 	if(isvalid())
 	{
@@ -303,20 +322,35 @@ void NeoPixelPainterBrush::paint(void){
 		_brush->position = _brush->i >> SPEEDSHIFT;
 
 		//determine which value(s) to fade and which to paint directly
-		//note: only one fade-to value can be saved. if multiple are fadings are used,
+		//note: only one fade-to value can be saved. if multiple fadings are used,
 		//the highest priority value is painted. priority is h,s,v (h being the highest priority)
 		//so a fade of value and hue to a value of 100 and a hue of 50 will fade the value also to 50
-		//fadeout can always be used becaus it fades to 0
+		//fadeout can always be used because it fades to 0
 		//to avoid this mess, more values would have to be stored in the _canvastopaint, using up too much ram (on higher ram chips, this may be added)
 
 		_canvastopaint->_canvas[_brush->position].fadespeed = _brush->fadespeed;
-		if (_brush->fadevalue_in == 0)  _canvastopaint->_canvas[_brush->position].v = _brush->value; //no fade? -> set the value
-		else  _canvastopaint->_canvas[_brush->position].fadevalue = _brush->value; //use fade? set the fadevalue
+		if (_brush->fadevalue_in == 0)  
+		{
+			_canvastopaint->_canvas[_brush->position].v = _brush->value; //no fade? -> set the value
+		}
+		else  
+		{
+			_canvastopaint->_canvas[_brush->position].fadevalue = _brush->value; //use fade? set the fadevalue
+		}
 		
-		if ((_brush->fadesaturation_in || _brush->fadesaturation_out) == 0)  _canvastopaint->_canvas[_brush->position].s = _brush->saturation; //no fade? -> set the value
-		else  _canvastopaint->_canvas[_brush->position].fadevalue = _brush->saturation; //use fade? set the fadevalue
+		if ((_brush->fadesaturation_in || _brush->fadesaturation_out) == 0) 
+		{
+			_canvastopaint->_canvas[_brush->position].s = _brush->saturation; //no fade? -> set the value
+		}
+		else
+		{
+			_canvastopaint->_canvas[_brush->position].fadevalue = _brush->saturation; //use fade? set the fadevalue
+		}
 		
-		if ((_brush->fadehue_near || _brush->fadehue_far) == 0)  _canvastopaint->_canvas[_brush->position].h = _brush->hue; //no fade? -> set the value
+		if ((_brush->fadehue_near || _brush->fadehue_far) == 0) 
+		{
+				_canvastopaint->_canvas[_brush->position].h = _brush->hue; //no fade? -> set the value
+		}
 		else  
 		{
 			_canvastopaint->_canvas[_brush->position].fadevalue = _brush->hue; //use fade? set the fadevalue
@@ -385,17 +419,25 @@ void NeoPixelPainterBrush::paint(void){
 			_brush->i = 0;
 			_brush->speed = -_brush->speed;
 		}
+		else if(_brush->stop)
+		{
+			_brush->i = 0;
+		}
 		else
 		{
-			_brush->i = ((int32_t)(_canvastopaint->_LED->numPixels() - 1)) << SPEEDSHIFT;
+			_brush->i = ((int32_t)(_canvastopaint->_count - 1)) << SPEEDSHIFT;
 		}
 	}
-	else if (((_brush->i) >> SPEEDSHIFT) >= _canvastopaint->_LED->numPixels())
+	else if (((_brush->i) >> SPEEDSHIFT) >= _canvastopaint->_count)
 	{
 		if (_brush->bounce)
 		{
-			_brush->i = ((int32_t)(_canvastopaint->_LED->numPixels() - 1)) << SPEEDSHIFT;
+			_brush->i = ((int32_t)(_canvastopaint->_count - 1)) << SPEEDSHIFT;
 			_brush->speed = -_brush->speed;
+		}
+		else if(_brush->stop)
+		{
+			_brush->i = ((int32_t)(_canvastopaint->_count - 1)) << SPEEDSHIFT;
 		}
 		else
 		{
@@ -407,26 +449,34 @@ void NeoPixelPainterBrush::paint(void){
 
 void NeoPixelPainterBrush::moveTo(uint16_t position)
 {
-	if(position >=  _canvastopaint->_LED->numPixels())
+	if(position >= _canvastopaint->_count)
 	{
-		position = _canvastopaint->_LED->numPixels() - 1;
+		position = _canvastopaint->_count - 1;
 	}
 	_brush->i = ((int32_t)position<<SPEEDSHIFT);
 	_brush->position = 0xFFFF; //invalidate the current position marking so the pixel always gets updated
 }
+
 int16_t NeoPixelPainterBrush::getPosition(void)
 {
 	return _brush->i>>SPEEDSHIFT;
+}
+
+int32_t NeoPixelPainterBrush::getSubPosition(void)
+{
+	return _brush->i;
 }
 
 void NeoPixelPainterBrush::setSpeed(int16_t speed)
 {
 	_brush->speed = speed;
 }
+
 uint16_t NeoPixelPainterBrush::getSpeed(void)
 {
 	return _brush->speed;
 }
+
 void NeoPixelPainterBrush::setSpeedlimit(int16_t limit)
 {
 	_brush->speedlimit = limit;
@@ -443,8 +493,8 @@ HSV NeoPixelPainterBrush::getColor(void)
 {
 	HSV returncolor;
 	returncolor.h = _brush->hue;
-	returncolor.s =_brush->saturation;
-	returncolor.v =_brush->value;
+	returncolor.s = _brush->saturation;
+	returncolor.v = _brush->value;
 	return returncolor;
 }
 
@@ -452,10 +502,12 @@ void  NeoPixelPainterBrush::setFadeSpeed(uint8_t fadeSpeed)
 {
 	_brush->fadespeed = fadeSpeed;
 }
+
 uint8_t NeoPixelPainterBrush::getFadeSpeed(void)
 {
 	return _brush->fadespeed;
 }
+
 void NeoPixelPainterBrush::setFadeout(bool value)
 {
 	_brush->fadevalue_out = value;
@@ -465,7 +517,6 @@ void NeoPixelPainterBrush::setFadein(bool value)
 {
 	_brush->fadevalue_in = value;
 }
-
 
 void NeoPixelPainterBrush::setFadeHueNear(bool value)
 {
@@ -492,6 +543,10 @@ void NeoPixelPainterBrush::setBounce(bool value)
 	_brush->bounce = value;
 }
 
+void NeoPixelPainterBrush::setStop(bool value)
+{
+	_brush->stop = value;
+}
 
 
 
